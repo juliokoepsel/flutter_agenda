@@ -1,5 +1,7 @@
 import 'dart:collection';
 import 'package:flutter/material.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
+//loading animatons from: https://pub.dev/packages/loading_animation_widget
 
 void main() {
   runApp(MaterialApp(
@@ -256,6 +258,8 @@ class MyCustomFormState extends State<MyCustomForm> {
             },
             child: const Text('Adicionar'),
           ),
+          LoadingAnimationWidget.staggeredDotsWave(
+              color: Colors.lightBlue, size: 200)
         ],
       ),
     );
