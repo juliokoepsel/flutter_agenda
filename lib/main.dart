@@ -1,9 +1,22 @@
 import 'dart:collection';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 //loading animatons from: https://pub.dev/packages/loading_animation_widget
 
-void main() {
+//https://stackoverflow.com/questions/67794181/how-to-change-theme-in-flutter
+
+late SharedPreferences prefs;
+late ValueNotifier<ThemeMode> _notifier;
+
+void main() async {
+  prefs = await SharedPreferences.getInstance();
+  final bool? dark = prefs.getBool('dark');
+  _notifier = ValueNotifier(ThemeMode.light);
+  if (dark == true) {
+    _notifier = ValueNotifier(ThemeMode.dark);
+  }
+  /*
   runApp(MaterialApp(
     title: "Agenda",
     initialRoute: '/',
@@ -12,13 +25,35 @@ void main() {
       '/novo': (context) => const Novo(),
       '/recentes': (context) => const Recentes(),
     },
-    theme: ThemeData(
-      brightness: Brightness.dark,
-      primaryColor: Colors.lightBlue,
-      secondaryHeaderColor: Colors.deepPurple,
-      hintColor: Colors.orangeAccent,
-    ),
+    //theme: appTheme,
   ));
+  */
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return ValueListenableBuilder<ThemeMode>(
+      valueListenable: _notifier,
+      builder: (_, mode, __) {
+        return MaterialApp(
+          title: "Agenda",
+          initialRoute: '/',
+          routes: {
+            '/': (context) => const Agenda(),
+            '/novo': (context) => const Novo(),
+            '/recentes': (context) => const Recentes(),
+          },
+          theme: ThemeData.light(),
+          darkTheme: ThemeData.dark(),
+          themeMode: mode,
+        );
+      },
+    );
+  }
 }
 
 class Contato {
@@ -147,6 +182,19 @@ class Agenda extends StatelessWidget {
               title: const Text('+ Novo Contato'),
               onTap: () {
                 Navigator.pushReplacementNamed(context, '/novo');
+              },
+            ),
+            ListTile(
+              title: const Text('Mudar Tema'),
+              onTap: () async {
+                final bool? dark = prefs.getBool('dark');
+                if (dark == true) {
+                  await prefs.setBool('dark', false);
+                  _notifier.value = ThemeMode.light;
+                } else {
+                  await prefs.setBool('dark', true);
+                  _notifier.value = ThemeMode.dark;
+                }
               },
             ),
           ],
@@ -394,6 +442,19 @@ class Recentes extends StatelessWidget {
               title: const Text('+ Novo Contato'),
               onTap: () {
                 Navigator.pushNamed(context, '/novo');
+              },
+            ),
+            ListTile(
+              title: const Text('Mudar Tema'),
+              onTap: () async {
+                final bool? dark = prefs.getBool('dark');
+                if (dark == true) {
+                  await prefs.setBool('dark', false);
+                  _notifier.value = ThemeMode.light;
+                } else {
+                  await prefs.setBool('dark', true);
+                  _notifier.value = ThemeMode.dark;
+                }
               },
             ),
           ],
