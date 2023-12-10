@@ -3,19 +3,23 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 //loading animatons from: https://pub.dev/packages/loading_animation_widget
-
-//https://stackoverflow.com/questions/67794181/how-to-change-theme-in-flutter
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 
 late SharedPreferences prefs;
 late ValueNotifier<ThemeMode> _notifier;
 
 void main() async {
+  //WidgetsFlutterBinding.ensureInitialized();
+  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+
   prefs = await SharedPreferences.getInstance();
   final bool? dark = prefs.getBool('dark');
   _notifier = ValueNotifier(ThemeMode.light);
   if (dark == true) {
     _notifier = ValueNotifier(ThemeMode.dark);
   }
+
   /*
   runApp(MaterialApp(
     title: "Agenda",
@@ -28,6 +32,9 @@ void main() async {
     //theme: appTheme,
   ));
   */
+
+  FlutterNativeSplash.remove();
+
   runApp(const MyApp());
 }
 
@@ -159,8 +166,9 @@ class Agenda extends StatelessWidget {
           children: [
             const DrawerHeader(
               decoration: BoxDecoration(
-                color: Color(0xFF424242),
-              ),
+                  color: Color(0xFF424242),
+                  image: DecorationImage(
+                      image: AssetImage("assets/icon.png"), fit: BoxFit.cover)),
               child: Text(
                 'Agenda de Contatos',
                 style: TextStyle(fontSize: 30),
@@ -419,8 +427,9 @@ class Recentes extends StatelessWidget {
           children: [
             const DrawerHeader(
               decoration: BoxDecoration(
-                color: Color(0xFF424242),
-              ),
+                  color: Color(0xFF424242),
+                  image: DecorationImage(
+                      image: AssetImage("assets/icon.png"), fit: BoxFit.cover)),
               child: Text(
                 'Agenda de Contatos',
                 style: TextStyle(fontSize: 30),
